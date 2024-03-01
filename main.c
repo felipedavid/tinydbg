@@ -15,8 +15,8 @@ const char *debug_event_name[10] = {
 };
 
 int main(int argc, char **argv) {
-    STARTUPINFO startup_info;
-    PROCESS_INFORMATION process_information;
+    STARTUPINFO startup_info = { 0 };
+    PROCESS_INFORMATION process_information = { 0 };
 
     int status = CreateProcessA(
         NULL, 
@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
         &startup_info,
         &process_information
     );
-    printf("status %d\n", status);
     if (status == 0) {
-        fprintf(stderr, "Unable to create process");
+        int error_code = GetLastError();
+        fprintf(stderr, "Unable to create process (error code: %d)\n", error_code);
         return -1;
     }
 
@@ -47,7 +47,9 @@ int main(int argc, char **argv) {
         for (;;) {
             printf("> ");
             fgets(input_buf, sizeof(input_buf), stdin);
+            input_buf[strlen(input_buf)-1] = 0;
             if (!strcmp(input_buf, "g")) {
+                break;
             } else {
                 printf("Unknown command: '%s'", input_buf);
             }
