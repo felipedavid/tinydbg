@@ -30,17 +30,28 @@ int main(int argc, char **argv) {
         &startup_info,
         &process_information
     );
+    printf("status %d\n", status);
     if (status == 0) {
         fprintf(stderr, "Unable to create process");
         return -1;
     }
 
     DEBUG_EVENT debug_event;
+    char input_buf[256];
     for (;;) {
         WaitForDebugEvent(&debug_event, INFINITE);
         printf("%s\n", debug_event_name[debug_event.dwDebugEventCode]);
 
         if (debug_event.dwDebugEventCode == EXIT_PROCESS_DEBUG_EVENT) break;
+
+        for (;;) {
+            printf("> ");
+            fgets(input_buf, sizeof(input_buf), stdin);
+            if (!strcmp(input_buf, "g")) {
+            } else {
+                printf("Unknown command: '%s'", input_buf);
+            }
+        }
 
         ContinueDebugEvent(debug_event.dwProcessId, debug_event.dwThreadId, DBG_EXCEPTION_NOT_HANDLED);
     }
